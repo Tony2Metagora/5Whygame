@@ -27,7 +27,8 @@ const siteDir = join(root, "site");
 const configPath = join(siteDir, "config.js");
 
 const PLACEHOLDER = "__APP_URL__PLACEHOLDER__";
-const DEFAULT_APP_URL = "https://5whygame.vercel.app";
+/** Sans PUBLIC_APP_URL : éviter une URL Vercel inventée (404 DEPLOYMENT_NOT_FOUND). */
+const DEFAULT_APP_URL = "https://vercel.com/dashboard";
 
 const dryRun = process.argv.includes("--dry-run");
 

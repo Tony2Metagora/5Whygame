@@ -46,9 +46,10 @@
         </article>
       </section>
       <p class="foot">
-        Cette page est statique (GitHub Pages). L’application complète tourne sur ton domaine
-        Vercel — configure l’URL ci-dessous dans <code>site/config.js</code> ou variable
-        <code>PUBLIC_APP_URL</code> au déploiement.
+        GitHub Pages = page vitrine. Le bouton « Ouvrir l’app » doit pointer vers l’URL
+        <strong>Production</strong> affichée sur Vercel (ex. <code>xxx.vercel.app</code>).
+        Repo GitHub → <strong>Settings → Secrets and variables → Actions → Variables</strong> :
+        <code>PUBLIC_APP_URL</code> = cette URL, puis relancer le workflow « Deploy GitHub Pages ».
       </p>
     </main>
     <script src="./config.js"></script>

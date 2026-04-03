@@ -11,6 +11,7 @@ on:
     paths:
       - "site/**"
       - ".github/workflows/github-pages.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -25,11 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Définir PUBLIC_APP_URL dans le repo (Settings → Variables) = URL exacte affichée sur Vercel (Production).
+      # Sans variable, fallback évite un 404 Vercel sur un sous-domaine inventé.
       - name: Inject PUBLIC_APP_URL dans site/config.js
         env:
           RAW_URL: ${{ vars.PUBLIC_APP_URL }}
         run: |
-          APP_URL="${RAW_URL:-https://5whygame.vercel.app}"
+          APP_URL="${RAW_URL:-https://vercel.com/dashboard}"
           sed -i "s|__APP_URL__PLACEHOLDER__|${APP_URL}|g" site/config.js
           if grep -q '__APP_URL__PLACEHOLDER__' site/config.js; then echo "inject failed"; exit 1; fi
 
