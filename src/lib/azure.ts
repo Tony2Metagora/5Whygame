@@ -7,10 +7,10 @@ export type AzureEnv = {
 };
 
 export function getAzureOpenAIEnv(): AzureEnv {
-  const endpoint = process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/$/, "");
-  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  const endpoint = process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/$/, "").trim();
+  const apiKey = process.env.AZURE_OPENAI_API_KEY?.trim();
   const apiVersion =
-    process.env.AZURE_OPENAI_API_VERSION ?? "2024-10-21";
+    process.env.AZURE_OPENAI_API_VERSION?.trim() ?? "2024-10-21";
   if (!endpoint || !apiKey) {
     throw new Error(
       "Configuration Azure manquante : AZURE_OPENAI_ENDPOINT et AZURE_OPENAI_API_KEY sont requis."
@@ -34,9 +34,11 @@ export async function azureChatCompletion(params: {
   maxCompletionTokens?: number;
 }): Promise<string> {
   const { endpoint, apiKey, apiVersion } = getAzureOpenAIEnv();
-  const deployment = process.env.AZURE_OPENAI_CHAT_DEPLOYMENT;
+  const deployment = process.env.AZURE_OPENAI_CHAT_DEPLOYMENT?.trim();
   if (!deployment) {
-    throw new Error("AZURE_OPENAI_CHAT_DEPLOYMENT est requis (déploiement GPT-5.4 mini).");
+    throw new Error(
+      "AZURE_OPENAI_CHAT_DEPLOYMENT est requis (ex. gpt-5.4-nano, nom exact du déploiement Azure)."
+    );
   }
   const url = `${endpoint}/openai/deployments/${encodeURIComponent(
     deployment
