@@ -10,7 +10,7 @@ export function getAzureOpenAIEnv(): AzureEnv {
   const endpoint = process.env.AZURE_OPENAI_ENDPOINT?.replace(/\/$/, "").trim();
   const apiKey = process.env.AZURE_OPENAI_API_KEY?.trim();
   const apiVersion =
-    process.env.AZURE_OPENAI_API_VERSION?.trim() ?? "2024-10-21";
+    process.env.AZURE_OPENAI_API_VERSION?.trim() ?? "2024-12-01-preview";
   if (!endpoint || !apiKey) {
     throw new Error(
       "Configuration Azure manquante : AZURE_OPENAI_ENDPOINT et AZURE_OPENAI_API_KEY sont requis."
