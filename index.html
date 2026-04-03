@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>5Whygame — Réponse aux objections</title>
+    <meta
+      name="description"
+      content="Entraînement vocal : une IA joue la cliente. Situation + fiche parfum, prébrief GPT, Realtime, Whisper."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <main class="wrap">
+      <p class="kicker">5Whygame</p>
+      <h1>Réponse aux objections</h1>
+      <p class="lead">
+        Simule une vente en boutique : tu parles, une <strong>IA cliente</strong> répond en
+        audio. Contexte, fiche produit (parfum), prébrief et objections — sans prendre la parole
+        à ta place.
+      </p>
+      <div class="actions">
+        <a id="app-link" class="btn primary" href="#">Ouvrir l’app</a>
+        <a
+          class="btn ghost"
+          href="https://github.com/tony2metagora/5Whygame"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Code sur GitHub
+        </a>
+      </div>
+      <section class="grid">
+        <article>
+          <h2>Situation</h2>
+          <p>Tu décris le contexte de la simulation ; l’IA s’en sert pour rester cohérente.</p>
+        </article>
+        <article>
+          <h2>Fiche parfum</h2>
+          <p>JSON structuré (notes, prix, marque…) pour éviter les inventions hors fiche.</p>
+        </article>
+        <article>
+          <h2>Stack</h2>
+          <p>Next.js, Azure OpenAI (mini, Realtime, Whisper), déploiement app sur Vercel.</p>
+        </article>
+      </section>
+      <p class="foot">
+        GitHub Pages = page vitrine. Le bouton « Ouvrir l’app » doit pointer vers l’URL
+        <strong>Production</strong> affichée sur Vercel (ex. <code>xxx.vercel.app</code>).
+        Repo GitHub → <strong>Settings → Secrets and variables → Actions → Variables</strong> :
+        <code>PUBLIC_APP_URL</code> = cette URL, puis relancer le workflow « Deploy GitHub Pages ».
+      </p>
+    </main>
+    <script src="./config.js"></script>
+  </body>
+</html>

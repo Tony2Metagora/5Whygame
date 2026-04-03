@@ -1,0 +1,144 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: #fafafa;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      rgba(139, 92, 246, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(165deg, #0c0a12 0%, #18181b 45%, #0c0a12 100%);
+}
+
+.wrap {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a78bfa;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  margin: 0 0 2rem;
+  font-size: 1.05rem;
+  color: #a1a1aa;
+}
+
+.lead strong {
+  color: #e4e4e7;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn.primary {
+  background: #7c3aed;
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: #6d28d9;
+}
+
+.btn.ghost {
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+}
+
+.btn.ghost:hover {
+  border-color: #71717a;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 540px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+article {
+  padding: 1rem 1rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #27272a;
+  background: rgba(24, 24, 27, 0.6);
+}
+
+article h2 {
+  margin: 0 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f4f4f5;
+}
+
+article p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #a1a1aa;
+}
+
+.foot {
+  margin: 2.5rem 0 0;
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+code {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  background: #27272a;
+  color: #d4d4d8;
+}
