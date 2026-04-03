@@ -1,0 +1,69 @@
+{
+  "$id": "https://objections-game.local/schemas/perfume-product.schema.json",
+  "title": "Fiche produit parfum",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "marque",
+    "nom_du_parfum",
+    "prix_public_ttc",
+    "contenance_ml"
+  ],
+  "properties": {
+    "marque": { "type": "string", "minLength": 1 },
+    "ligne": { "type": "string" },
+    "nom_du_parfum": { "type": "string", "minLength": 1 },
+    "annee_sortie": { "type": "integer", "minimum": 1800, "maximum": 2100 },
+    "prix_public_ttc": { "type": "number", "minimum": 0 },
+    "contenance_ml": { "type": "number", "exclusiveMinimum": 0 },
+    "prix_au_litre": { "type": "number", "minimum": 0 },
+    "canal": {
+      "type": "string",
+      "description": "boutique, e-commerce, duty-free, etc."
+    },
+    "positionnement": {
+      "type": "string",
+      "description": "niche, designer, mainstream…"
+    },
+    "famille_olfactive_principale": { "type": "string" },
+    "notes_de_tete": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "string" }
+      ]
+    },
+    "notes_de_coeur": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "string" }
+      ]
+    },
+    "notes_de_fond": {
+      "oneOf": [
+        { "type": "array", "items": { "type": "string" } },
+        { "type": "string" }
+      ]
+    },
+    "accords_cles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "intensite": { "type": "string" },
+    "sillage": { "type": "string" },
+    "tenue": { "type": "string" },
+    "concentration": { "type": "string" },
+    "ingredients_mis_en_avant": { "type": "string" },
+    "sans_alcool": { "type": "boolean" },
+    "clean_beauty_claims": { "type": "string" },
+    "histoire_maison": { "type": "string" },
+    "nez_parfumeur": { "type": "string" },
+    "inspiration_narrative": { "type": "string" },
+    "codes_visuels": { "type": "string" },
+    "promesse_emotionnelle": { "type": "string" },
+    "persona_cible": { "type": "string" },
+    "occasions_usage": { "type": "string" },
+    "points_faibles_connus": { "type": "string" },
+    "arguments_prix": { "type": "string" },
+    "arguments_produit": { "type": "string" }
+  }
+}

@@ -1,0 +1,41 @@
+# Déploie site/ sur la branche gh-pages à chaque push sur main (sans action manuelle).
+# Pages : Settings → Build and deployment → Source = GitHub Actions (ou branche gh-pages selon l’UI).
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "site/**"
+      - ".github/workflows/github-pages.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Inject PUBLIC_APP_URL dans site/config.js
+        env:
+          RAW_URL: ${{ vars.PUBLIC_APP_URL }}
+        run: |
+          APP_URL="${RAW_URL:-https://5whygame.vercel.app}"
+          sed -i "s|__APP_URL__PLACEHOLDER__|${APP_URL}|g" site/config.js
+          if grep -q '__APP_URL__PLACEHOLDER__' site/config.js; then echo "inject failed"; exit 1; fi
+
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          force_orphan: true
