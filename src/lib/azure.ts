@@ -192,7 +192,11 @@ export async function azureCompletionForPrebrief(params: {
   maxCompletionTokens?: number;
 }): Promise<string> {
   const mode =
-    process.env.AZURE_OPENAI_CHAT_API?.trim().toLowerCase() ?? "auto";
+    process.env.AZURE_OPENAI_CHAT_API?.trim().toLowerCase() ?? "responses";
+
+  if (mode === "chat") {
+    return azureChatCompletion(params);
+  }
 
   if (mode === "responses") {
     return azureResponsesCompletion({
@@ -201,19 +205,16 @@ export async function azureCompletionForPrebrief(params: {
     });
   }
 
-  if (mode === "chat") {
-    return azureChatCompletion(params);
-  }
-
+  // auto : essaie Responses d'abord (nano), puis chat si échec
   try {
-    return await azureChatCompletion(params);
+    return await azureResponsesCompletion({
+      messages: params.messages,
+      maxOutputTokens: params.maxCompletionTokens,
+    });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     if (/404|resource not found/i.test(msg)) {
-      return azureResponsesCompletion({
-        messages: params.messages,
-        maxOutputTokens: params.maxCompletionTokens,
-      });
+      return azureChatCompletion(params);
     }
     throw e;
   }
