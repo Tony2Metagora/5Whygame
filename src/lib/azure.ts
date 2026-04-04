@@ -71,6 +71,154 @@ export async function azureChatCompletion(params: {
   return typeof content === "string" ? content : "";
 }
 
+/** Extrait le texte d’une réponse API « Responses » (Foundry). */
+function extractResponsesOutputText(data: unknown): string {
+  if (typeof data !== "object" || data === null) return "";
+  const root = data as Record<string, unknown>;
+  if (typeof root.output_text === "string" && root.output_text.trim()) {
+    return root.output_text;
+  }
+  const output = root.output;
+  if (!Array.isArray(output)) return "";
+  const chunks: string[] = [];
+  for (const item of output) {
+    if (typeof item !== "object" || item === null) continue;
+    const content = (item as { content?: unknown }).content;
+    if (!Array.isArray(content)) continue;
+    for (const part of content) {
+      if (typeof part !== "object" || part === null) continue;
+      const p = part as { type?: string; text?: string };
+      if (p.type === "output_text" && typeof p.text === "string") {
+        chunks.push(p.text);
+      }
+    }
+  }
+  return chunks.join("\n");
+}
+
+/**
+ * API **Responses** (nano / Foundry) — chemin portail : `/openai/responses?api-version=2025-04-01-preview`.
+ * À utiliser quand `.../chat/completions` renvoie 404 (déploiement non exposé en chat).
+ */
+export async function azureResponsesCompletion(params: {
+  messages: { role: "system" | "user" | "assistant"; content: string }[];
+  maxOutputTokens?: number;
+}): Promise<string> {
+  const { endpoint, apiKey } = getAzureOpenAIEnv();
+  const deployment = process.env.AZURE_OPENAI_CHAT_DEPLOYMENT?.trim();
+  if (!deployment) {
+    throw new Error("AZURE_OPENAI_CHAT_DEPLOYMENT est requis.");
+  }
+  const apiVersion =
+    process.env.AZURE_OPENAI_RESPONSES_API_VERSION?.trim() ??
+    "2025-04-01-preview";
+
+  const url = `${endpoint}/openai/responses?api-version=${encodeURIComponent(
+    apiVersion
+  )}`;
+
+  const input = params.messages.map((m) => ({
+    type: "message" as const,
+    role: m.role,
+    content: m.content,
+  }));
+
+  const body: Record<string, unknown> = {
+    model: deployment,
+    input,
+    max_output_tokens: params.maxOutputTokens ?? 2500,
+  };
+
+  let res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+    },
+    body: JSON.stringify(body),
+  });
+
+  let text = await res.text();
+
+  if (!res.ok && res.status === 400) {
+    const merged = params.messages
+      .map((m) => `[${m.role}] ${m.content}`)
+      .join("\n\n");
+    const fallbackBody: Record<string, unknown> = {
+      model: deployment,
+      input: [
+        {
+          type: "message",
+          role: "user",
+          content: merged,
+        },
+      ],
+      max_output_tokens: params.maxOutputTokens ?? 2500,
+    };
+    res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": apiKey,
+      },
+      body: JSON.stringify(fallbackBody),
+    });
+    text = await res.text();
+  }
+
+  if (!res.ok) {
+    throw new Error(`Azure responses ${res.status}: ${text}`);
+  }
+
+  let json: unknown;
+  try {
+    json = JSON.parse(text) as unknown;
+  } catch {
+    throw new Error("Réponse Responses non JSON.");
+  }
+
+  return extractResponsesOutputText(json);
+}
+
+/**
+ * Prébrief : **chat completions** ou **Responses** selon `AZURE_OPENAI_CHAT_API`.
+ * - `chat` : uniquement chat completions
+ * - `responses` : uniquement Responses (nano côté portail)
+ * - `auto` (défaut) : essaie chat, puis Responses si 404 / Resource not found
+ */
+export async function azureCompletionForPrebrief(params: {
+  messages: { role: "system" | "user" | "assistant"; content: string }[];
+  temperature?: number;
+  maxCompletionTokens?: number;
+}): Promise<string> {
+  const mode =
+    process.env.AZURE_OPENAI_CHAT_API?.trim().toLowerCase() ?? "auto";
+
+  if (mode === "responses") {
+    return azureResponsesCompletion({
+      messages: params.messages,
+      maxOutputTokens: params.maxCompletionTokens,
+    });
+  }
+
+  if (mode === "chat") {
+    return azureChatCompletion(params);
+  }
+
+  try {
+    return await azureChatCompletion(params);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/404|resource not found/i.test(msg)) {
+      return azureResponsesCompletion({
+        messages: params.messages,
+        maxOutputTokens: params.maxCompletionTokens,
+      });
+    }
+    throw e;
+  }
+}
+
 /**
  * Transcription audio via déploiement Whisper sur Azure.
  * Le champ fichier attendu dans le FormData entrant est `file`.

@@ -4,7 +4,7 @@ import {
   buildPrebriefUserMessage,
 } from "@/lib/prompts/prebrief-mini";
 import { buildRealtimeClientInstructions } from "@/lib/prompts/realtime-client";
-import { azureChatCompletion } from "@/lib/azure";
+import { azureCompletionForPrebrief } from "@/lib/azure";
 
 export const maxDuration = 120;
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     typeof parsed.difficulty === "string" ? parsed.difficulty : undefined;
 
   try {
-    const prebrief = await azureChatCompletion({
+    const prebrief = await azureCompletionForPrebrief({
       messages: [
         { role: "system", content: PREBRIEF_SYSTEM_PROMPT },
         {

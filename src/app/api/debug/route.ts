@@ -20,9 +20,19 @@ export async function GET() {
   const sameKey =
     apiKey && realtimeApiKey ? apiKey === realtimeApiKey : undefined;
 
-  const chatUrl = endpoint && chatDeployment && apiVersion
-    ? `${endpoint}/openai/deployments/${chatDeployment}/chat/completions?api-version=${apiVersion}`
+  const chatUrl =
+    endpoint && chatDeployment && apiVersion
+      ? `${endpoint}/openai/deployments/${chatDeployment}/chat/completions?api-version=${apiVersion}`
+      : "(incomplet)";
+
+  const responsesVer =
+    process.env.AZURE_OPENAI_RESPONSES_API_VERSION?.trim() ??
+    "2025-04-01-preview";
+  const responsesUrl = endpoint
+    ? `${endpoint}/openai/responses?api-version=${responsesVer}`
     : "(incomplet)";
+  const chatApiMode =
+    process.env.AZURE_OPENAI_CHAT_API?.trim() || "auto (chat puis Responses si 404)";
 
   return Response.json({
     endpoint: endpoint ?? "(vide)",
@@ -35,5 +45,8 @@ export async function GET() {
     realtimeApiVersion: process.env.AZURE_OPENAI_REALTIME_API_VERSION?.trim() ?? "(non défini)",
     realtimeVoice: process.env.AZURE_OPENAI_REALTIME_VOICE?.trim() ?? "(non défini → défaut alloy)",
     chatUrlConstructed: chatUrl,
+    responsesUrlConstructed: responsesUrl,
+    AZURE_OPENAI_CHAT_API: chatApiMode,
+    AZURE_OPENAI_RESPONSES_API_VERSION: responsesVer,
   });
 }
